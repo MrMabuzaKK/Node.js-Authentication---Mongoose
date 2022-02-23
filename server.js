@@ -11,21 +11,13 @@ const {
   checkAuthenticated,
   checkNotAuthenticated,
 } = require("./middlewares/auth");
+const multer  = require('multer');
+const upload = multer({ dest: 'uploads/' });
 
 const app = express();
 
 const initializePassport = require("./passport-config");
-initializePassport(
-  passport,
-  async (email) => {
-    const userFound = await User.findOne({ email });
-    return userFound;
-  },
-  async (id) => {
-    const userFound = await User.findOne({ _id: id });
-    return userFound;
-  }
-);
+initializePassport(passport);
 
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
@@ -72,7 +64,7 @@ app.post("/register", checkNotAuthenticated, async (req, res) => {
     res.redirect("/register");
   } else {
     try {
-      const hashedPassword = await bcrypt.hash(req.body.password, 10);
+      const hashedPassword = await bcrypt.hash(req.body.password, process.env.PASSWORD_SALT);
       const user = new User({
         name: req.body.name,
         email: req.body.email,
@@ -93,13 +85,24 @@ app.delete("/logout", (req, res) => {
   res.redirect("/login");
 });
 
+app.post('/profile', upload.single('avatar'), function (req, res, next) {
+  res.render("index", { name: req.user.name });
+})
+
+app.use((req, res, next) => {
+  res.status(404).send("Sorry can't find that!");
+})
+
 mongoose
-  .connect("mongodb://localhost:27017/auth", {
+  .connect(process.env.CONNECTION_URI, {
     useUnifiedTopology: true,
     useNewUrlParser: true,
   })
+  .catch(error => {
+    console.error('Error occurred while connecting to mongodb', error);
+  })
   .then(() => {
-    app.listen(3000, () => {
+    app.listen(process.env.PORT, () => {
       console.log("Server is running on Port 3000");
     });
   });

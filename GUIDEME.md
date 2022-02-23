@@ -2,7 +2,10 @@
 
 # Kulani's Project for Analytics Advertising
 
-### Create a .env file and add your session secret like:
-SESSION_SECRET=randomstring
-#### Then install dependencies and run it, as smooth as that!
-# project made using Node js, Express js, EJS, MongoDB 
+### Setup
+
+1. Make sure you have node version >= 10.x.x
+2. Make sure you have mongoDb installed
+3. Install dependencies by running `npm install`
+4. Start the server by running `npm start`
+5. Navigate to `localhost:3000/register`
