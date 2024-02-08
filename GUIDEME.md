@@ -1,6 +1,4 @@
-# Analytics Advertising
-
-# Kulani's Project for Analytics Advertising
+# Authentication Project
 
 ### Setup
 
